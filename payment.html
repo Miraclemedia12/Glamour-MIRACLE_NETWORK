@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Payment | Glamour Elite</title>
+    <title>Secure Checkout | Glamour Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -19,9 +19,7 @@
             font-family: 'Poppins', sans-serif;
             color: white;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            overflow-x: hidden;
         }
 
         .gold-gradient {
@@ -30,179 +28,255 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .payment-card {
-            width: 95%;
-            max-width: 450px;
-            margin: 40px auto;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(245, 194, 76, 0.15);
-            border-radius: 35px;
-            padding: 30px;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(245, 194, 76, 0.2);
             backdrop-filter: blur(20px);
+            border-radius: 30px;
         }
 
-        .account-box {
-            background: rgba(245, 194, 76, 0.05);
-            border: 1px solid rgba(245, 194, 76, 0.1);
-            border-radius: 20px;
-            padding: 20px;
-            position: relative;
+        .account-row {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px 0;
         }
 
-        .copy-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+        .copy-btn {
+            background: rgba(245, 194, 76, 0.1);
+            color: var(--gold);
+            padding: 5px 12px;
+            border-radius: 8px;
             font-size: 10px;
-            background: var(--gold);
-            color: black;
-            padding: 2px 8px;
-            border-radius: 5px;
-            font-weight: 800;
-            cursor: pointer;
-        }
-
-        .upload-area {
-            border: 2px dashed rgba(245, 194, 76, 0.3);
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
+            font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
         }
 
-        .upload-area:hover {
-            background: rgba(245, 194, 76, 0.05);
-            border-color: var(--gold);
+        .copy-btn:hover { background: var(--gold); color: black; }
+
+        /* Modal Styles */
+        #upload-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            backdrop-filter: blur(10px);
         }
+
+        .modal-content {
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            transform: scale(0.9);
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-active .modal-content { transform: scale(1); }
 
         .loader {
             border: 3px solid rgba(245, 194, 76, 0.1);
             border-top: 3px solid var(--gold);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        #processing-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(14, 14, 14, 0.95);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+            color: black;
+            font-weight: 800;
+            transition: 0.4s;
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(245, 194, 76, 0.3);
         }
     </style>
 </head>
-<body>
+<body class="flex flex-col items-center">
 
-    <div class="mt-10 mb-6 text-center">
-        <h1 class="text-2xl font-bold gold-gradient" style="font-family: 'Cinzel', serif;">SECURE CHECKOUT</h1>
-        <p class="text-zinc-500 text-[10px] uppercase tracking-[3px]">Complete Your Activation</p>
+    <div class="mt-8 mb-4 text-center">
+        <h1 class="text-3xl font-bold gold-gradient" style="font-family: 'Cinzel', serif;">PAYMENT</h1>
+        <div class="flex items-center justify-center gap-2 mt-1">
+            <span class="h-[1px] w-8 bg-zinc-700"></span>
+            <span class="text-red-500 font-bold text-xs tracking-widest uppercase" id="timer">10:00</span>
+            <span class="h-[1px] w-8 bg-zinc-700"></span>
+        </div>
     </div>
 
-    <div class="payment-card">
-        <!-- Account Details -->
-        <div class="text-center mb-6">
-            <p class="text-zinc-400 text-sm">Transfer exactly <span class="text-white font-bold">₦14,000</span> to:</p>
+    <div class="glass-card w-[92%] max-width-[450px] p-8 mb-10 shadow-2xl">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <p class="text-zinc-500 text-[10px] uppercase tracking-widest">Amount Due</p>
+                <p class="text-3xl font-black text-white">₦14,000</p>
+            </div>
+            <div class="bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full flex items-center gap-2">
+                <i class="fas fa-shield-halved text-green-500 text-[10px]"></i>
+                <span class="text-green-500 text-[9px] font-bold uppercase">Secured</span>
+            </div>
         </div>
 
-        <div class="account-box mb-8">
-            <div class="mb-4">
-                <p class="text-zinc-500 text-[10px] uppercase font-bold">Bank Name</p>
-                <p class="text-lg font-semibold">78 FINANCE COMPANY LTD</p>
-            </div>
-            
-            <div class="mb-4">
-                <p class="text-zinc-500 text-[10px] uppercase font-bold">Account Number</p>
-                <div class="flex items-center gap-2">
-                    <p class="text-2xl font-black gold-gradient tracking-wider" id="acc-num">9159733430</p>
-                    <span class="copy-badge" onclick="copyText()">COPY</span>
+        <div class="space-y-2 mb-8">
+            <div class="account-row flex justify-between items-center">
+                <div>
+                    <p class="text-zinc-500 text-[10px] uppercase">Bank Name</p>
+                    <p class="text-sm font-semibold text-zinc-200" id="bank-name">78 FINANCE COMPANY LTD</p>
                 </div>
             </div>
 
-            <div>
-                <p class="text-zinc-500 text-[10px] uppercase font-bold">Account Holder</p>
-                <p class="text-sm font-medium text-white">MIRACLE OLATOYE</p>
+            <div class="account-row flex justify-between items-center">
+                <div>
+                    <p class="text-zinc-500 text-[10px] uppercase">Account Number</p>
+                    <p class="text-2xl font-bold gold-gradient tracking-widest" id="acc-num">9159733430</p>
+                </div>
+                <div class="copy-btn" onclick="copyText()">COPY</div>
+            </div>
+
+            <div class="account-row border-none flex justify-between items-center">
+                <div>
+                    <p class="text-zinc-500 text-[10px] uppercase">Beneficiary</p>
+                    <p class="text-sm font-semibold text-zinc-200" id="acc-holder">MIRACLE OLATOYE</p>
+                </div>
             </div>
         </div>
 
-        <!-- Receipt Upload -->
-        <div class="mb-6">
-            <p class="text-zinc-400 text-xs mb-3 font-medium"><i class="fas fa-camera mr-2"></i>Upload Payment Receipt</p>
-            <input type="file" id="receipt-upload" accept="image/*" class="hidden" onchange="handleFile(event)">
-            <label for="receipt-upload" class="upload-area block" id="drop-zone">
-                <i class="fas fa-cloud-upload-alt text-3xl text-zinc-600 mb-2"></i>
-                <p class="text-zinc-500 text-xs" id="file-name">Click to select or drop screenshot</p>
-            </label>
-        </div>
-
-        <button onclick="processPayment()" id="pay-btn" class="w-full bg-zinc-800 text-zinc-500 py-4 rounded-xl font-bold uppercase text-sm tracking-widest cursor-not-allowed" disabled>
-            Verify Receipt
+        <button onclick="openUpload()" class="w-full btn-gold py-5 rounded-2xl uppercase tracking-widest text-sm shadow-lg">
+            I Have Made Payment
         </button>
+        
+        <p class="text-center text-zinc-600 text-[10px] mt-6 italic">
+            Please make the transfer within the time limit to ensure instant activation.
+        </p>
     </div>
 
-    <!-- Processing Overlay -->
-    <div id="processing-overlay">
-        <div class="loader mb-6"></div>
+    <!-- Upload Popup Modal -->
+    <div id="upload-modal">
+        <div class="modal-content glass-card border-gold">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold gold-gradient">Upload Proof</h3>
+                <i class="fas fa-times text-zinc-500 cursor-pointer" onclick="closeUpload()"></i>
+            </div>
+            
+            <p class="text-zinc-400 text-xs mb-6">Please upload a clear screenshot of your successful transaction.</p>
+
+            <input type="file" id="receipt-upload" accept="image/*" class="hidden" onchange="validateFile(event)">
+            <label for="receipt-upload" class="border-2 border-dashed border-zinc-700 rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer hover:border-gold transition-all mb-6" id="drop-zone">
+                <i class="fas fa-file-invoice-dollar text-4xl text-zinc-700 mb-3" id="upload-icon"></i>
+                <p class="text-zinc-500 text-xs font-medium" id="file-label">Tap to select screenshot</p>
+            </label>
+
+            <button id="final-proceed" onclick="startVerification()" class="w-full bg-zinc-800 text-zinc-500 py-4 rounded-xl font-bold uppercase text-xs cursor-not-allowed" disabled>
+                Proceed to Verification
+            </button>
+        </div>
+    </div>
+
+    <!-- Verification Overlay -->
+    <div id="processing-overlay" class="fixed inset-0 bg-black/95 z-[100] hidden flex-col justify-center items-center">
+        <div class="loader mb-8"></div>
         <h2 class="text-xl font-bold gold-gradient italic mb-2">Confirming Payment...</h2>
-        <p class="text-zinc-500 text-xs text-center px-10">Our AI is verifying your transaction. Do not close this window.</p>
+        <p class="text-zinc-500 text-[10px] tracking-[4px] uppercase animate-pulse">Syncing with Banking Server</p>
     </div>
 
-    <script>
-        // Retrieve registration data from localStorage
-        const userData = JSON.parse(localStorage.getItem('glamour_reg_data')) || {
-            name: "Unknown",
-            user: "Guest",
-            phone: "N/A",
-            location: "N/A"
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQcchP6Ze2-9-L0iPjhdg8ahS3HZ-KkXk",
+            authDomain: "glamour-miraclenetwork.firebaseapp.com",
+            projectId: "glamour-miraclenetwork",
+            storageBucket: "glamour-miraclenetwork.firebasestorage.app",
+            messagingSenderId: "828763013594",
+            appId: "1:828763013594:web:032d4ed7d72f0f2f90c0e3",
+            measurementId: "G-T9HY205QVB"
         };
 
-        function copyText() {
-            const num = document.getElementById('acc-num').innerText;
-            navigator.clipboard.writeText(num);
-            alert("Account number copied!");
-        }
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        function handleFile(event) {
-            const file = event.target.files[0];
-            const btn = document.getElementById('pay-btn');
-            const fileNameDisplay = document.getElementById('file-name');
-            
-            if (file) {
-                fileNameDisplay.innerText = file.name;
-                fileNameDisplay.classList.add('text-green-400');
+        let redirectUrl = "https://t.me/Haltimo";
+
+        // Listen for Firebase Updates
+        const settingsRef = ref(db, 'paymentSettings');
+        onValue(settingsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('bank-name').innerText = data.bankName || "78 FINANCE COMPANY LTD";
+                document.getElementById('acc-num').innerText = data.accountNumber || "9159733430";
+                document.getElementById('acc-holder').innerText = data.accountHolder || "MIRACLE OLATOYE";
+                redirectUrl = data.telegramLink || "https://t.me/Haltimo";
+            }
+        });
+
+        // Countdown Timer
+        let time = 600;
+        const timerElement = document.getElementById('timer');
+        setInterval(() => {
+            const min = Math.floor(time / 60);
+            const sec = time % 60;
+            timerElement.innerText = `${min}:${sec < 10 ? '0' : ''}${sec}`;
+            if (time > 0) time--;
+        }, 1000);
+
+        // Modal Functions
+        window.openUpload = () => {
+            const modal = document.getElementById('upload-modal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('modal-active'), 10);
+        };
+
+        window.closeUpload = () => {
+            const modal = document.getElementById('upload-modal');
+            modal.classList.remove('modal-active');
+            setTimeout(() => modal.style.display = 'none', 300);
+        };
+
+        window.validateFile = (e) => {
+            const file = e.target.files[0];
+            const btn = document.getElementById('final-proceed');
+            if(file) {
+                document.getElementById('file-label').innerText = "Selected: " + file.name;
+                document.getElementById('file-label').classList.replace('text-zinc-500', 'text-green-400');
+                document.getElementById('upload-icon').classList.replace('text-zinc-700', 'text-green-500');
                 btn.disabled = false;
-                btn.style.background = 'linear-gradient(135deg, #F5C24C, #D4A017)';
+                btn.classList.replace('bg-zinc-800', 'btn-gold');
                 btn.style.color = 'black';
                 btn.style.cursor = 'pointer';
             }
-        }
+        };
 
-        function processPayment() {
-            document.getElementById('processing-overlay').style.display = 'flex';
+        window.startVerification = () => {
+            document.getElementById('processing-overlay').classList.remove('hidden');
+            document.getElementById('processing-overlay').classList.add('flex');
+            
+            const userData = JSON.parse(localStorage.getItem('glamour_reg_data')) || { name: "Valued Client", user: "User" };
 
-            // Simulate verification time (3 seconds)
             setTimeout(() => {
-                const telegramLink = "https://t.me/Haltimo";
-                
-                // Prefilled message construction
-                const message = `👑 *NEW PAYMENT VERIFIED*%0A%0A` +
-                                `👤 *Name:* ${userData.name}%0A` +
-                                `🆔 *Username:* @${userData.user}%0A` +
-                                `📞 *Phone:* ${userData.phone}%0A` +
-                                `📍 *Location:* ${userData.location}%0A` +
-                                `💰 *Amount:* ₦14,000%0A%0A` +
-                                `Kindly activate my creator portal.`;
+                const message = `💎 *GLAMOUR PREMIUM ACTIVATION*%0A%0A` +
+                                `👤 *CLIENT:* ${userData.name}%0A` +
+                                `🆔 *USER:* @${userData.user}%0A` +
+                                `📞 *TEL:* ${userData.phone || 'N/A'}%0A` +
+                                `📍 *LOC:* ${userData.location || 'N/A'}%0A` +
+                                `💰 *AMT:* ₦14,000%0A%0A` +
+                                `✅ *PAYMENT PROOF SUBMITTED.*%0A` +
+                                `_Please verify and grant portal access._`;
 
-                window.location.href = `${telegramLink}?text=${message}`;
-            }, 3500);
-        }
+                window.location.href = `${redirectUrl}?text=${message}`;
+            }, 4500);
+        };
+
+        window.copyText = () => {
+            const num = document.getElementById('acc-num').innerText;
+            navigator.clipboard.writeText(num);
+            alert("Account Number Copied!");
+        };
     </script>
 </body>
 </html>
