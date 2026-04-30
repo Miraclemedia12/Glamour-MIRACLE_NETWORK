@@ -13,18 +13,22 @@
         
         .gold-text { background: linear-gradient(135deg, #fff5c0, var(--gold), var(--dark-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        .glass-panel { background: rgba(15, 15, 15, 0.8); border: 1px solid rgba(245, 194, 76, 0.15); backdrop-filter: blur(20px); border-radius: 35px; }
+        .glass-panel { background: rgba(15, 15, 15, 0.9); border: 1px solid rgba(245, 194, 76, 0.2); backdrop-filter: blur(20px); border-radius: 35px; }
         
-        input { background: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(245, 194, 76, 0.1) !important; color: white !important; transition: 0.3s; }
-        input:focus { border-color: var(--gold) !important; outline: none; box-shadow: 0 0 15px rgba(245, 194, 76, 0.1); }
+        input { background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(245, 194, 76, 0.1) !important; color: white !important; transition: 0.3s; }
+        input:focus { border-color: var(--gold) !important; outline: none; box-shadow: 0 0 15px rgba(245, 194, 76, 0.2); }
         
-        #admin-content { display: none; width: 100%; max-width: 500px; }
+        #admin-content { display: none; width: 100%; max-width: 450px; }
         
-        .btn-gold { background: linear-gradient(135deg, var(--gold), var(--dark-gold)); color: black; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
-        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(245, 194, 76, 0.3); }
-        
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); transition: 0.5s; }
-        .toast.show { transform: translateX(-50%) translateY(0); }
+        .btn-gold { background: linear-gradient(135deg, var(--gold), var(--dark-gold)); color: black; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; cursor: pointer; }
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(245, 194, 76, 0.4); }
+        .btn-gold:active { transform: scale(0.98); }
+
+        /* Success Popup */
+        #success-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            display: none; justify-content: center; align-items: center; z-index: 100;
+        }
     </style>
 </head>
 <body>
@@ -65,11 +69,14 @@
                 </div>
                 <div>
                     <label class="text-[10px] text-zinc-500 uppercase font-bold ml-1 tracking-widest">Redirect (Telegram)</label>
-                    <input type="text" id="telegramLink" class="w-full p-4 rounded-2xl text-sm mt-1" placeholder="https://t.me/...">
+                    <input type="text" id="telegramLink" class="w-full p-4 rounded-2xl text-sm mt-1">
                 </div>
             </div>
 
-            <button onclick="saveSettings()" class="w-full btn-gold py-5 rounded-2xl mt-10 text-xs">Update System</button>
+            <!-- This is the button -->
+            <button id="update-btn" onclick="saveSettings()" class="w-full btn-gold py-5 rounded-2xl mt-10 text-xs">
+                Update System Live
+            </button>
             
             <button onclick="location.reload()" class="w-full text-zinc-600 hover:text-zinc-400 text-[10px] uppercase font-bold tracking-widest mt-6">
                 <i class="fas fa-power-off mr-2"></i> Log Out
@@ -77,16 +84,22 @@
         </div>
     </div>
 
-    <!-- Notification -->
-    <div id="toast" class="toast bg-white text-black px-8 py-3 rounded-full font-bold text-xs flex items-center gap-3 shadow-2xl">
-        <i class="fas fa-check-circle text-green-500 text-lg"></i> CHANGES PUBLISHED LIVE
+    <!-- Success Modal Popup -->
+    <div id="success-modal">
+        <div class="bg-[#111] border border-gold p-10 rounded-[40px] text-center max-w-xs w-full mx-4">
+            <div class="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-check text-green-500 text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">SYSTEM UPDATED</h3>
+            <p class="text-zinc-500 text-xs mb-8">The payment page has been updated successfully for all users.</p>
+            <button onclick="closeSuccess()" class="w-full btn-gold py-4 rounded-2xl text-[10px]">Got it</button>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Your exact Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyCQcchP6Ze2-9-L0iPjhdg8ahS3HZ-KkXk",
             authDomain: "glamour-miraclenetwork.firebaseapp.com",
@@ -101,51 +114,53 @@
         const db = getDatabase(app);
         const settingsRef = ref(db, 'paymentSettings');
 
-        // Login Handler
+        // Global functions
         window.handleLogin = () => {
             const user = document.getElementById('admin-user').value;
             const pass = document.getElementById('admin-pass').value;
-            const error = document.getElementById('login-error');
-
             if(user === "AdminMiracle" && pass === "GlamourMiracle") {
                 document.getElementById('login-gate').style.display = 'none';
                 document.getElementById('admin-content').style.display = 'block';
-                fetchCurrentData();
+                // Pull current data immediately after login
+                onValue(settingsRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if(data) {
+                        document.getElementById('bankName').value = data.bankName || "";
+                        document.getElementById('accountNumber').value = data.accountNumber || "";
+                        document.getElementById('accountHolder').value = data.accountHolder || "";
+                        document.getElementById('telegramLink').value = data.telegramLink || "";
+                    }
+                }, { onlyOnce: true });
             } else {
-                error.style.opacity = '1';
-                setTimeout(() => error.style.opacity = '0', 2000);
+                document.getElementById('login-error').style.opacity = '1';
             }
         };
 
-        // Fetch existing data so inputs aren't empty
-        function fetchCurrentData() {
-            onValue(settingsRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    document.getElementById('bankName').value = data.bankName || "";
-                    document.getElementById('accountNumber').value = data.accountNumber || "";
-                    document.getElementById('accountHolder').value = data.accountHolder || "";
-                    document.getElementById('telegramLink').value = data.telegramLink || "";
-                }
-            }, { onlyOnce: true });
-        }
+        window.saveSettings = async () => {
+            const btn = document.getElementById('update-btn');
+            btn.innerText = "Updating...";
+            btn.disabled = true;
 
-        // Push data to Firebase
-        window.saveSettings = () => {
-            const data = {
+            const updateData = {
                 bankName: document.getElementById('bankName').value,
                 accountNumber: document.getElementById('accountNumber').value,
                 accountHolder: document.getElementById('accountHolder').value,
                 telegramLink: document.getElementById('telegramLink').value
             };
 
-            set(settingsRef, data).then(() => {
-                const toast = document.getElementById('toast');
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 3000);
-            }).catch((err) => {
-                alert("Error updating: " + err.message);
-            });
+            try {
+                await set(settingsRef, updateData);
+                document.getElementById('success-modal').style.display = 'flex';
+            } catch (error) {
+                alert("Error: " + error.message);
+            } finally {
+                btn.innerText = "Update System Live";
+                btn.disabled = false;
+            }
+        };
+
+        window.closeSuccess = () => {
+            document.getElementById('success-modal').style.display = 'none';
         };
     </script>
 </body>
