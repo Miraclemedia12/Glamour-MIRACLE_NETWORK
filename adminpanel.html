@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Admin | Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #F5C24C;
+            --dark-gold: #D4A017;
+            --bg: #050505;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 2px 2px, rgba(245, 194, 76, 0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .gold-gradient {
+            background: linear-gradient(135deg, #fff5c0, var(--gold), var(--dark-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .admin-card {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(245, 194, 76, 0.2);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        input {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(245, 194, 76, 0.1) !important;
+            color: white !important;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--gold) !important;
+            outline: none;
+            box-shadow: 0 0 15px rgba(245, 194, 76, 0.1);
+        }
+
+        .btn-update {
+            background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+            color: black;
+            font-weight: 700;
+            transition: 0.4s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-update:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(245, 194, 76, 0.4);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px #10b981;
+        }
+    </style>
+</head>
+<body class="p-6">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold gold-gradient" style="font-family: 'Cinzel', serif;">ADMIN PANEL</h1>
+                <p class="text-zinc-500 text-xs tracking-widest uppercase">System Control & Gateways</p>
+            </div>
+            <div class="flex items-center gap-3 bg-zinc-900/50 px-4 py-2 rounded-full border border-zinc-800">
+                <span class="status-dot"></span>
+                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">Firebase Live Sync Active</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Left Column: Settings Form -->
+            <div class="md:col-span-2 space-y-6">
+                <div class="admin-card p-8">
+                    <h2 class="text-lg font-semibold mb-6 flex items-center gap-2">
+                        <i class="fas fa-university text-gold"></i> Payment Configuration
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] uppercase text-zinc-500 font-bold ml-1">Bank Institution</label>
+                            <input type="text" id="bankName" placeholder="e.g. Opay" class="w-full p-4 rounded-xl">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] uppercase text-zinc-500 font-bold ml-1">Account Number</label>
+                            <input type="text" id="accountNumber" placeholder="9159..." class="w-full p-4 rounded-xl">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] uppercase text-zinc-500 font-bold ml-1">Beneficiary Name</label>
+                            <input type="text" id="accountHolder" placeholder="Full Name" class="w-full p-4 rounded-xl">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] uppercase text-zinc-500 font-bold ml-1">Redirect Link (Telegram)</label>
+                            <input type="text" id="telegramLink" placeholder="https://t.me/..." class="w-full p-4 rounded-xl">
+                        </div>
+                    </div>
+
+                    <button onclick="updateSettings()" class="w-full btn-update mt-8 py-4 rounded-xl shadow-lg">
+                        Apply Global Changes
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column: Stats/Info -->
+            <div class="space-y-6">
+                <div class="admin-card p-6 border-zinc-800">
+                    <h3 class="text-zinc-500 text-[10px] uppercase font-bold mb-4">Current Active Gateway</h3>
+                    <div class="space-y-3">
+                        <div class="bg-black/40 p-4 rounded-lg border border-zinc-900">
+                            <p class="text-xs text-zinc-500">Live Bank</p>
+                            <p class="font-bold gold-gradient" id="curr-bank">Loading...</p>
+                        </div>
+                        <div class="bg-black/40 p-4 rounded-lg border border-zinc-900">
+                            <p class="text-xs text-zinc-500">Agent Link</p>
+                            <p class="font-bold text-zinc-300 truncate text-xs" id="curr-link">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-card p-6 bg-gold/5 border-gold/20">
+                    <p class="text-[10px] text-gold font-bold uppercase mb-2">Pro Tip</p>
+                    <p class="text-xs text-zinc-400 leading-relaxed">
+                        Changes made here reflect **instantly** for all users currently on the checkout page. No refresh needed.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-10 right-10 bg-green-500 text-black px-6 py-3 rounded-xl font-bold translate-y-20 transition-transform duration-500 flex items-center gap-3">
+        <i class="fas fa-check-circle"></i> Settings Synced Successfully!
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Your Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQcchP6Ze2-9-L0iPjhdg8ahS3HZ-KkXk",
+            authDomain: "glamour-miraclenetwork.firebaseapp.com",
+            projectId: "glamour-miraclenetwork",
+            storageBucket: "glamour-miraclenetwork.firebasestorage.app",
+            messagingSenderId: "828763013594",
+            appId: "1:828763013594:web:032d4ed7d72f0f2f90c0e3",
+            measurementId: "G-T9HY205QVB"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const settingsRef = ref(db, 'paymentSettings');
+
+        // Load Current Data
+        onValue(settingsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('bankName').value = data.bankName || "";
+                document.getElementById('accountNumber').value = data.accountNumber || "";
+                document.getElementById('accountHolder').value = data.accountHolder || "";
+                document.getElementById('telegramLink').value = data.telegramLink || "";
+
+                // Update Preview Sidebar
+                document.getElementById('curr-bank').innerText = data.bankName || "Not Set";
+                document.getElementById('curr-link').innerText = data.telegramLink || "Not Set";
+            }
+        });
+
+        // Update Function
+        window.updateSettings = () => {
+            const data = {
+                bankName: document.getElementById('bankName').value,
+                accountNumber: document.getElementById('accountNumber').value,
+                accountHolder: document.getElementById('accountHolder').value,
+                telegramLink: document.getElementById('telegramLink').value,
+                lastUpdated: new Date().toISOString()
+            };
+
+            set(settingsRef, data).then(() => {
+                showToast();
+            }).catch(err => alert("Error updating: " + err));
+        };
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.style.transform = 'translateY(0)';
+            setTimeout(() => {
+                toast.style.transform = 'translateY(150px)';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
