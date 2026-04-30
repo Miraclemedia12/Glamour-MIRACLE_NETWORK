@@ -3,109 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glamour | Elite Admin Access</title>
+    <title>Glamour | Elite Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #F5C24C; --dark-gold: #D4A017; --bg: #050505; }
-        body { background: var(--bg); font-family: 'Poppins', sans-serif; color: white; overflow-x: hidden; }
+        body { background: var(--bg); font-family: 'Poppins', sans-serif; color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
         
         .gold-text { background: linear-gradient(135deg, #fff5c0, var(--gold), var(--dark-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        .glass-panel { background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(245, 194, 76, 0.1); backdrop-filter: blur(20px); border-radius: 30px; }
+        .glass-panel { background: rgba(15, 15, 15, 0.8); border: 1px solid rgba(245, 194, 76, 0.15); backdrop-filter: blur(20px); border-radius: 35px; }
         
-        input { background: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; color: white !important; transition: 0.3s; }
+        input { background: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(245, 194, 76, 0.1) !important; color: white !important; transition: 0.3s; }
         input:focus { border-color: var(--gold) !important; outline: none; box-shadow: 0 0 15px rgba(245, 194, 76, 0.1); }
         
-        #admin-content { display: none; }
+        #admin-content { display: none; width: 100%; max-width: 500px; }
         
         .btn-gold { background: linear-gradient(135deg, var(--gold), var(--dark-gold)); color: black; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
-        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(245, 194, 76, 0.2); }
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(245, 194, 76, 0.3); }
+        
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px); transition: 0.5s; }
+        .toast.show { transform: translateX(-50%) translateY(0); }
     </style>
 </head>
-<body class="min-height-screen flex items-center justify-center p-4">
+<body>
 
     <!-- LOGIN GATE -->
-    <div id="login-gate" class="w-full max-w-md glass-panel p-10 text-center animate-in fade-in zoom-in duration-500">
-        <h1 class="text-3xl font-bold gold-text mb-2" style="font-family: 'Cinzel';">ELITE ACCESS</h1>
-        <p class="text-zinc-500 text-[10px] tracking-[4px] uppercase mb-8">Admin Verification Required</p>
+    <div id="login-gate" class="w-full max-w-md glass-panel p-10 text-center shadow-2xl">
+        <h1 class="text-3xl font-bold gold-text mb-2" style="font-family: 'Cinzel';">ADMIN LOGIN</h1>
+        <p class="text-zinc-500 text-[10px] tracking-[4px] uppercase mb-8">Secure Gateway</p>
         
         <div class="space-y-4">
-            <input type="text" id="admin-user" placeholder="Username" class="w-full p-4 rounded-xl text-sm">
-            <input type="password" id="admin-pass" placeholder="Password" class="w-full p-4 rounded-xl text-sm">
-            <button onclick="handleLogin()" class="w-full btn-gold py-4 rounded-xl text-xs mt-4">Enter Portal</button>
+            <input type="text" id="admin-user" placeholder="Username" class="w-full p-4 rounded-2xl text-sm">
+            <input type="password" id="admin-pass" placeholder="Password" class="w-full p-4 rounded-2xl text-sm">
+            <button onclick="handleLogin()" class="w-full btn-gold py-4 rounded-2xl text-xs mt-4">Verify Identity</button>
         </div>
-        <p id="login-error" class="text-red-500 text-[10px] mt-4 opacity-0">Invalid Credentials. Access Denied.</p>
+        <p id="login-error" class="text-red-500 text-[10px] mt-4 opacity-0 transition-opacity">Invalid Credentials</p>
     </div>
 
     <!-- MAIN ADMIN PANEL -->
-    <div id="admin-content" class="w-full max-w-4xl animate-in slide-in-from-bottom duration-700">
-        <div class="flex justify-between items-end mb-8">
-            <div>
-                <h2 class="text-2xl font-bold gold-text" style="font-family: 'Cinzel';">SYSTEM CONTROL</h2>
-                <p class="text-zinc-500 text-[10px] tracking-[3px] uppercase">Live Gateway Management</p>
-            </div>
-            <button onclick="location.reload()" class="text-zinc-500 hover:text-white text-xs"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+    <div id="admin-content">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold gold-text" style="font-family: 'Cinzel';">COMMAND CENTER</h2>
+            <p class="text-zinc-500 text-[10px] tracking-[3px] uppercase">Glamour Payment Settings</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Form Section -->
-            <div class="md:col-span-2 glass-panel p-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-[9px] text-zinc-500 uppercase font-bold ml-1">Bank Institution</label>
-                        <input type="text" id="bankName" class="w-full p-4 rounded-xl text-sm font-medium">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[9px] text-zinc-500 uppercase font-bold ml-1">Account Number</label>
-                        <input type="text" id="accountNumber" class="w-full p-4 rounded-xl text-sm font-medium">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[9px] text-zinc-500 uppercase font-bold ml-1">Account Holder</label>
-                        <input type="text" id="accountHolder" class="w-full p-4 rounded-xl text-sm font-medium">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[9px] text-zinc-500 uppercase font-bold ml-1">Telegram Agent Link</label>
-                        <input type="text" id="telegramLink" class="w-full p-4 rounded-xl text-sm font-medium">
-                    </div>
+        <div class="glass-panel p-8 shadow-2xl">
+            <div class="space-y-5">
+                <div>
+                    <label class="text-[10px] text-zinc-500 uppercase font-bold ml-1 tracking-widest">Bank Name</label>
+                    <input type="text" id="bankName" class="w-full p-4 rounded-2xl text-sm mt-1">
                 </div>
-                <button onclick="saveSettings()" class="w-full btn-gold py-5 rounded-2xl mt-10 text-xs shadow-xl">Push Live Updates</button>
+                <div>
+                    <label class="text-[10px] text-zinc-500 uppercase font-bold ml-1 tracking-widest">Account Number</label>
+                    <input type="text" id="accountNumber" class="w-full p-4 rounded-2xl text-sm mt-1">
+                </div>
+                <div>
+                    <label class="text-[10px] text-zinc-500 uppercase font-bold ml-1 tracking-widest">Account Holder</label>
+                    <input type="text" id="accountHolder" class="w-full p-4 rounded-2xl text-sm mt-1">
+                </div>
+                <div>
+                    <label class="text-[10px] text-zinc-500 uppercase font-bold ml-1 tracking-widest">Redirect (Telegram)</label>
+                    <input type="text" id="telegramLink" class="w-full p-4 rounded-2xl text-sm mt-1" placeholder="https://t.me/...">
+                </div>
             </div>
 
-            <!-- Status Info -->
-            <div class="space-y-6">
-                <div class="glass-panel p-6 border-gold/20 bg-gold/5">
-                    <p class="text-gold text-[10px] font-bold uppercase mb-4 tracking-widest"><i class="fas fa-satellite-dish mr-2"></i>Live Status</p>
-                    <div class="space-y-4">
-                        <div>
-                            <p class="text-[10px] text-zinc-500 uppercase">Current Bank</p>
-                            <p id="stat-bank" class="text-sm font-bold text-zinc-200 italic">Connecting...</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] text-zinc-500 uppercase">Last Updated</p>
-                            <p id="stat-time" class="text-xs text-zinc-400">Just now</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-panel p-6">
-                    <p class="text-zinc-500 text-[9px] leading-relaxed italic">
-                        "Security Tip: Ensure your Telegram link includes the https:// prefix to prevent redirection errors."
-                    </p>
-                </div>
-            </div>
+            <button onclick="saveSettings()" class="w-full btn-gold py-5 rounded-2xl mt-10 text-xs">Update System</button>
+            
+            <button onclick="location.reload()" class="w-full text-zinc-600 hover:text-zinc-400 text-[10px] uppercase font-bold tracking-widest mt-6">
+                <i class="fas fa-power-off mr-2"></i> Log Out
+            </button>
         </div>
     </div>
 
-    <!-- Success Notification -->
-    <div id="toast" class="fixed top-10 right-10 bg-green-500 text-black px-8 py-4 rounded-2xl font-bold translate-x-[200%] transition-transform duration-500 shadow-2xl">
-        <i class="fas fa-check-circle mr-2"></i> System Synced Successfully
+    <!-- Notification -->
+    <div id="toast" class="toast bg-white text-black px-8 py-3 rounded-full font-bold text-xs flex items-center gap-3 shadow-2xl">
+        <i class="fas fa-check-circle text-green-500 text-lg"></i> CHANGES PUBLISHED LIVE
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+        // Your exact Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyCQcchP6Ze2-9-L0iPjhdg8ahS3HZ-KkXk",
             authDomain: "glamour-miraclenetwork.firebaseapp.com",
@@ -120,7 +101,7 @@
         const db = getDatabase(app);
         const settingsRef = ref(db, 'paymentSettings');
 
-        // LOGIN LOGIC
+        // Login Handler
         window.handleLogin = () => {
             const user = document.getElementById('admin-user').value;
             const pass = document.getElementById('admin-pass').value;
@@ -129,15 +110,15 @@
             if(user === "AdminMiracle" && pass === "GlamourMiracle") {
                 document.getElementById('login-gate').style.display = 'none';
                 document.getElementById('admin-content').style.display = 'block';
-                loadData();
+                fetchCurrentData();
             } else {
                 error.style.opacity = '1';
-                setTimeout(() => error.style.opacity = '0', 3000);
+                setTimeout(() => error.style.opacity = '0', 2000);
             }
         };
 
-        // LOAD DATA FROM FIREBASE
-        function loadData() {
+        // Fetch existing data so inputs aren't empty
+        function fetchCurrentData() {
             onValue(settingsRef, (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -145,26 +126,25 @@
                     document.getElementById('accountNumber').value = data.accountNumber || "";
                     document.getElementById('accountHolder').value = data.accountHolder || "";
                     document.getElementById('telegramLink').value = data.telegramLink || "";
-                    
-                    document.getElementById('stat-bank').innerText = data.bankName || "Unknown";
-                    document.getElementById('stat-time').innerText = new Date().toLocaleTimeString();
                 }
-            });
+            }, { onlyOnce: true });
         }
 
-        // SAVE DATA TO FIREBASE
+        // Push data to Firebase
         window.saveSettings = () => {
-            const update = {
+            const data = {
                 bankName: document.getElementById('bankName').value,
                 accountNumber: document.getElementById('accountNumber').value,
                 accountHolder: document.getElementById('accountHolder').value,
                 telegramLink: document.getElementById('telegramLink').value
             };
 
-            set(settingsRef, update).then(() => {
+            set(settingsRef, data).then(() => {
                 const toast = document.getElementById('toast');
-                toast.style.transform = 'translateX(0)';
-                setTimeout(() => toast.style.transform = 'translateX(200%)', 3000);
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }).catch((err) => {
+                alert("Error updating: " + err.message);
             });
         };
     </script>
