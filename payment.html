@@ -1,185 +1,74 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Payment | Glamour Elite</title>
+    <title>Payment Portal | Glamour</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --gold: #F5C24C;
-            --dark-gold: #D4A017;
-            --bg: #0e0e0e;
-        }
-
-        body {
-            background: var(--bg);
-            font-family: 'Poppins', sans-serif;
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .gold-gradient {
-            background: linear-gradient(135deg, #fff5c0, var(--gold), var(--dark-gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .payment-card {
-            width: 95%;
-            max-width: 450px;
-            margin: 40px auto;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(245, 194, 76, 0.15);
-            border-radius: 35px;
-            padding: 30px;
-            backdrop-filter: blur(20px);
-        }
-
-        .account-box {
-            background: rgba(245, 194, 76, 0.05);
-            border: 1px solid rgba(245, 194, 76, 0.1);
-            border-radius: 20px;
-            padding: 20px;
-            position: relative;
-        }
-
-        .copy-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 10px;
-            background: var(--gold);
-            color: black;
-            padding: 2px 8px;
-            border-radius: 5px;
-            font-weight: 800;
-            cursor: pointer;
-        }
-
-        #upload-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.95);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 150;
-            backdrop-filter: blur(10px);
-        }
-
-        .modal-content {
-            width: 90%;
-            max-width: 400px;
-            background: #111;
-            border: 1px solid rgba(245, 194, 76, 0.3);
-            padding: 30px;
-            border-radius: 30px;
-            text-align: center;
-            box-shadow: 0 0 30px rgba(245, 194, 76, 0.1);
-        }
-
-        .upload-area {
-            border: 2px dashed rgba(245, 194, 76, 0.2);
-            border-radius: 20px;
-            padding: 40px 20px;
-            cursor: pointer;
-            transition: 0.3s;
-            margin: 20px 0;
-        }
-
-        .upload-area:hover { border-color: var(--gold); background: rgba(245, 194, 76, 0.03); }
-
-        .loader {
-            border: 3px solid rgba(245, 194, 76, 0.1);
-            border-top: 3px solid var(--gold);
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            animation: spin 1s linear infinite;
-        }
-
+        :root { --gold: #F5C24C; --bg: #0e0e0e; }
+        body { background: var(--bg); font-family: 'Poppins', sans-serif; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .gold-text { background: linear-gradient(135deg, #fff5c0, var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .card { width: 95%; max-width: 420px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(245, 194, 76, 0.15); border-radius: 35px; padding: 30px; margin-top: 40px; }
+        .acc-box { background: rgba(245, 194, 76, 0.05); border: 1px solid rgba(245, 194, 76, 0.1); border-radius: 20px; padding: 20px; }
+        #popup { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(10px); }
+        .loader { border: 3px solid rgba(245, 194, 76, 0.1); border-top: 3px solid var(--gold); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        #processing-overlay {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 200;
-        }
     </style>
 </head>
 <body>
 
-    <div class="mt-12 mb-4 text-center">
-        <h1 class="text-3xl font-bold gold-gradient" style="font-family: 'Cinzel', serif;">GLAMOUR PAYMENT</h1>
-        <p class="text-zinc-500 text-[10px] uppercase tracking-[4px] mt-1">Official Activation Portal</p>
+    <div class="mt-12 text-center">
+        <h1 class="text-2xl font-bold gold-text" style="font-family: 'Cinzel';">GLAMOUR PAYMENT</h1>
+        <p class="text-zinc-500 text-[9px] uppercase tracking-[4px]">Verified Security</p>
     </div>
 
-    <div class="payment-card">
+    <div class="card">
         <div class="text-center mb-8">
-            <p class="text-zinc-400 text-xs uppercase tracking-widest mb-1">Total Payable</p>
+            <p class="text-zinc-400 text-xs mb-1 uppercase tracking-widest">Amount to Pay</p>
             <p class="text-4xl font-black text-white">₦14,000</p>
         </div>
 
-        <div class="account-box mb-10 shadow-inner">
+        <div class="acc-box mb-8">
             <div class="mb-4">
-                <p class="text-zinc-500 text-[9px] uppercase font-bold tracking-tighter">Bank Name</p>
-                <p class="text-lg font-semibold text-zinc-200" id="display-bank">78 FINANCE COMPANY LTD</p>
+                <p class="text-zinc-500 text-[9px] uppercase font-bold">Bank</p>
+                <p id="bank" class="text-lg font-semibold italic text-zinc-300">Loading...</p>
             </div>
-            
             <div class="mb-4">
-                <p class="text-zinc-500 text-[9px] uppercase font-bold tracking-tighter">Account Number</p>
-                <div class="flex items-center gap-2">
-                    <p class="text-2xl font-black gold-gradient tracking-widest" id="acc-num">9159733430</p>
-                    <span class="copy-badge hover:scale-105 transition-transform" onclick="copyText()">COPY</span>
+                <p class="text-zinc-500 text-[9px] uppercase font-bold">Account Number</p>
+                <div class="flex items-center justify-between">
+                    <p id="acc" class="text-2xl font-black gold-text tracking-widest">----------</p>
+                    <button onclick="copyAcc()" class="bg-yellow-500 text-black text-[9px] font-bold px-3 py-1 rounded">COPY</button>
                 </div>
             </div>
-
             <div>
-                <p class="text-zinc-500 text-[9px] uppercase font-bold tracking-tighter">Beneficiary</p>
-                <p class="text-sm font-medium text-zinc-300" id="display-holder">MIRACLE OLATOYE</p>
+                <p class="text-zinc-500 text-[9px] uppercase font-bold">Holder</p>
+                <p id="holder" class="text-sm font-medium">Loading...</p>
             </div>
         </div>
 
-        <button onclick="openModal()" class="w-full bg-gradient-to-br from-[#F5C24C] to-[#D4A017] text-black py-5 rounded-2xl font-black uppercase text-xs tracking-[2px] shadow-[0_10px_20px_rgba(212,160,23,0.2)] active:scale-95 transition-all">
-            I Have Made Payment
-        </button>
+        <button onclick="openPopup()" class="w-full bg-gradient-to-r from-yellow-500 to-yellow-700 text-black py-5 rounded-2xl font-black uppercase text-xs tracking-widest">I Have Made Payment</button>
     </div>
 
-    <!-- Popup Modal -->
-    <div id="upload-modal">
-        <div class="modal-content animate-in fade-in zoom-in duration-300">
-            <h3 class="text-xl font-bold gold-gradient mb-2">Proof of Payment</h3>
-            <p class="text-zinc-500 text-[10px] uppercase tracking-widest mb-4">Upload Screenshot</p>
-            
-            <input type="file" id="receipt-upload" accept="image/*" class="hidden" onchange="handleFile(event)">
-            <label for="receipt-upload" class="upload-area block" id="drop-zone">
-                <i class="fas fa-cloud-upload-alt text-4xl text-zinc-700 mb-4" id="upload-icon"></i>
-                <p class="text-zinc-400 text-xs font-medium" id="file-name">Tap to select or take photo</p>
+    <!-- POPUP -->
+    <div id="popup">
+        <div class="bg-[#111] border border-yellow-500/30 p-8 rounded-[40px] text-center w-80 mx-4" id="modal-ui">
+            <h3 class="text-lg font-bold gold-text mb-4">UPLOAD RECEIPT</h3>
+            <label class="block w-full border-2 border-dashed border-zinc-800 p-10 rounded-3xl cursor-pointer hover:bg-white/5 transition mb-6">
+                <input type="file" class="hidden" onchange="fileSelected(this)">
+                <i class="fas fa-camera text-3xl text-zinc-700 mb-2" id="cam-icon"></i>
+                <p class="text-zinc-500 text-[10px]" id="file-msg">Tap to upload proof</p>
             </label>
-
-            <div class="flex gap-4 mt-6">
-                <button onclick="closeModal()" class="flex-1 py-4 rounded-xl text-[10px] font-bold uppercase text-zinc-500 border border-zinc-800">Back</button>
-                <button onclick="processPayment()" id="proceed-btn" class="flex-1 bg-zinc-900 text-zinc-700 py-4 rounded-xl text-[10px] font-bold uppercase cursor-not-allowed transition-colors" disabled>Proceed</button>
-            </div>
+            <button id="verify-btn" onclick="verify()" class="w-full bg-zinc-900 text-zinc-600 py-4 rounded-xl font-bold uppercase text-xs cursor-not-allowed" disabled>Verify Now</button>
         </div>
-    </div>
 
-    <!-- Verification Screen -->
-    <div id="processing-overlay">
-        <div class="loader mb-8"></div>
-        <h2 class="text-2xl font-bold gold-gradient italic mb-3">Verifying...</h2>
-        <p class="text-zinc-500 text-[10px] uppercase tracking-[3px] animate-pulse">Checking Transaction Status</p>
+        <!-- LOADER -->
+        <div class="hidden flex flex-col items-center" id="loader-ui">
+            <div class="loader mb-4"></div>
+            <p class="gold-text font-bold italic">Confirming Payment...</p>
+        </div>
     </div>
 
     <script type="module">
@@ -198,59 +87,48 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        let currentRedirect = "https://t.me/Haltimo";
+        const settingsRef = ref(db, 'paymentConfig');
+        let redirectLink = "https://t.me/Haltimo";
 
-        // LIVE UPDATE LISTENER
-        const settingsRef = ref(db, 'paymentSettings');
-        onValue(settingsRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                document.getElementById('display-bank').innerText = data.bankName || "78 FINANCE COMPANY LTD";
-                document.getElementById('acc-num').innerText = data.accountNumber || "9159733430";
-                document.getElementById('display-holder').innerText = data.accountHolder || "MIRACLE OLATOYE";
-                currentRedirect = data.telegramLink || "https://t.me/Haltimo";
+        // Listen for changes
+        onValue(settingsRef, (snap) => {
+            const data = snap.val();
+            if(data) {
+                document.getElementById('bank').innerText = data.bank;
+                document.getElementById('acc').innerText = data.acc;
+                document.getElementById('holder').innerText = data.name;
+                redirectLink = data.link;
             }
         });
 
-        window.openModal = () => document.getElementById('upload-modal').style.display = 'flex';
-        window.closeModal = () => document.getElementById('upload-modal').style.display = 'none';
-
-        window.copyText = () => {
-            const num = document.getElementById('acc-num').innerText;
-            navigator.clipboard.writeText(num);
-            alert("Account Details Copied!");
+        window.copyAcc = () => {
+            navigator.clipboard.writeText(document.getElementById('acc').innerText);
+            alert("Copied!");
         };
 
-        window.handleFile = (event) => {
-            const file = event.target.files[0];
-            const btn = document.getElementById('proceed-btn');
-            const fileNameDisplay = document.getElementById('file-name');
-            const icon = document.getElementById('upload-icon');
-            
-            if (file) {
-                fileNameDisplay.innerText = "Receipt Captured";
-                fileNameDisplay.classList.add('text-green-500');
-                icon.classList.replace('text-zinc-700', 'text-green-500');
+        window.openPopup = () => document.getElementById('popup').style.display = 'flex';
+
+        window.fileSelected = (input) => {
+            if(input.files.length > 0) {
+                document.getElementById('file-msg').innerText = "Receipt Loaded";
+                document.getElementById('file-msg').style.color = "#4ADE80";
+                document.getElementById('cam-icon').style.color = "#4ADE80";
+                const btn = document.getElementById('verify-btn');
                 btn.disabled = false;
                 btn.classList.replace('bg-zinc-900', 'bg-white');
-                btn.classList.replace('text-zinc-700', 'text-black');
-                btn.style.cursor = 'pointer';
+                btn.classList.replace('text-zinc-600', 'text-black');
             }
         };
 
-        window.processPayment = () => {
-            const userData = JSON.parse(localStorage.getItem('glamour_reg_data')) || { name: "Client", user: "User" };
-            document.getElementById('upload-modal').style.display = 'none';
-            document.getElementById('processing-overlay').style.display = 'flex';
-
+        window.verify = () => {
+            document.getElementById('modal-ui').style.display = 'none';
+            document.getElementById('loader-ui').classList.remove('hidden');
+            
             setTimeout(() => {
-                const message = `👑 *PAYMENT SUBMISSION*%0A%0A` +
-                                `👤 *CLIENT:* ${userData.name}%0A` +
-                                `🆔 *USER:* @${userData.user}%0A` +
-                                `💰 *AMT:* ₦14,000%0A%0A` +
-                                `Payment confirmed. Please provide portal access.`;
-                window.location.href = `${currentRedirect}?text=${message}`;
-            }, 4500);
+                const user = JSON.parse(localStorage.getItem('glamour_reg_data')) || { name: "User", user: "User" };
+                const msg = `👑 *NEW PAYMENT*%0A%0A*Name:* ${user.name}%0A*User:* @${user.user}%0A*Amt:* ₦14,000%0A%0AActivate account.`;
+                window.location.href = `${redirectLink}?text=${msg}`;
+            }, 3000);
         };
     </script>
 </body>
